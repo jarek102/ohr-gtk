@@ -13,9 +13,11 @@ wrong has a cost the UI cannot undo:
     never fire by accident from a panel meant for reading.
 
 ``audible``
-    Whether the wearer *hears* it. Only the ANC setter is known to be, in both
-    directions, on both models — and the level setter engages ANC, so it is marked
-    until someone has listened. Everything else is silent.
+    Whether the wearer *hears* it. The ANC flag and the submodes are, in both
+    directions; the level and transparency are not. The device appears to announce a
+    discrete change to what ANC is doing and stay quiet about everything else — the
+    level setter engages ANC and is still silent, which is the one result that does
+    not follow from that rule.
 """
 
 from __future__ import annotations
@@ -77,15 +79,17 @@ WRITES: tuple[Entry, ...] = (
     Entry("ANC off", lambda: anc.request_set_enabled(False), writes=True, audible=True),
     Entry("Transparency on", lambda: anc.request_set_transparency(True), writes=True),
     Entry("Transparency off", lambda: anc.request_set_transparency(False), writes=True),
-    Entry("Set level", lambda pct: anc.request_set_level(pct / 100), writes=True, audible=True,
+    Entry("Set level", lambda pct: anc.request_set_level(pct / 100), writes=True,
           argument="percent", default=50,
-          note="Engages ANC, so it clears transparency. Assumed audible until heard."),
+          note="Engages ANC, so it clears transparency \u2014 but silent, and no audible "
+               "difference was reported between 10 and 100."),
     Entry("Set anti-wind", lambda state: anc.request_set_submode(1, state), writes=True,
-          argument="state", default=0, note="Not yet confirmed on hardware."),
+          audible=True, argument="state", default=0,
+          note="Takes more than two values; 0 and 1 are the confirmed ones."),
     Entry("Set comfort", lambda state: anc.request_set_submode(2, state), writes=True,
-          argument="state", default=0, note="Not yet confirmed on hardware."),
+          audible=True, argument="state", default=0),
     Entry("Set adaptive", lambda state: anc.request_set_submode(3, state), writes=True,
-          argument="state", default=0, note="Not yet confirmed on hardware."),
+          audible=True, argument="state", default=0),
 )
 
 #: Feature 10 operation 5 deletes a pairing. It is not in the lists above and the raw
