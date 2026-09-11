@@ -13,11 +13,11 @@ wrong has a cost the UI cannot undo:
     never fire by accident from a panel meant for reading.
 
 ``audible``
-    Whether the wearer *hears* it. The ANC flag and the submodes are, in both
-    directions; the level and transparency are not. The device appears to announce a
-    discrete change to what ANC is doing and stay quiet about everything else — the
-    level setter engages ANC and is still silent, which is the one result that does
-    not follow from that rule.
+    Whether the wearer *hears* it — and **the two models disagree**, so this flag is
+    marked true where either one makes a sound. The ANC flag plays a tone on both. The
+    earbuds announce submode changes and say nothing about transparency; the over-ear
+    model does the reverse, with a tone for transparency distinct from the ANC one, and
+    a tone for level only at 0 and 100. Treat it as a warning, not a specification.
 """
 
 from __future__ import annotations
@@ -77,12 +77,14 @@ WRITES: tuple[Entry, ...] = (
     Entry("ANC on", lambda: anc.request_set_enabled(True), writes=True, audible=True,
           note="Also clears transparency."),
     Entry("ANC off", lambda: anc.request_set_enabled(False), writes=True, audible=True),
-    Entry("Transparency on", lambda: anc.request_set_transparency(True), writes=True),
-    Entry("Transparency off", lambda: anc.request_set_transparency(False), writes=True),
+    Entry("Transparency on", lambda: anc.request_set_transparency(True), writes=True,
+          audible=True, note="Audible on the over-ear model, silent on the earbuds."),
+    Entry("Transparency off", lambda: anc.request_set_transparency(False), writes=True,
+          audible=True),
     Entry("Set level", lambda pct: anc.request_set_level(pct / 100), writes=True,
-          argument="percent", default=50,
-          note="Engages ANC, so it clears transparency \u2014 but silent, and no audible "
-               "difference was reported between 10 and 100."),
+          audible=True, argument="percent", default=50,
+          note="Clears transparency and leaves ANC alone: from transparency you land on "
+               "off, from both-on you land on ANC."),
     Entry("Set anti-wind", lambda state: anc.request_set_submode(1, state), writes=True,
           audible=True, argument="state", default=0,
           note="Takes more than two values; 0 and 1 are the confirmed ones."),
