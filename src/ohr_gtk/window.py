@@ -243,11 +243,12 @@ class Window(Adw.ApplicationWindow):
         self._raw["payload"] = payload
 
         hint = Adw.ActionRow(
-            title="Odd operations have been getters",
+            title="Parity does not tell you what is safe",
             subtitle=(
-                "On features 12 and 13 every setter sat one below its getter, so even "
-                "operations are assumed to write. Unsupported operations answer with "
-                "an error frame rather than misbehaving."
+                "Setters sit one below their getters on features 12 and 13 only. "
+                "Feature 3 reads at operations 2 and 14, and feature 10 disconnects at "
+                "operation 3. An error reply carries a reason byte: 0 the feature is "
+                "absent, 1 the operation is."
             ),
         )
         hint.add_css_class("dim-label")
