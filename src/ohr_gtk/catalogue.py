@@ -26,7 +26,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-from ohr import Frame, anc, battery, connections, equaliser, features
+from ohr import Frame, anc, audio, battery, connections, device, equaliser, features
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,6 +45,21 @@ class Entry:
 
 
 READS: tuple[Entry, ...] = (
+    Entry("Firmware version", device.request_version, device.decode_versions,
+          note="Six bytes on both models: one version per three, per earbud."),
+    Entry("Firmware version (wide)", device.request_version_wide, device.decode_version_wide,
+          note="The same number, three 16-bit fields. A free cross-check."),
+    Entry("Product name", device.request_product_name, device.decode_product_name),
+    Entry("Charging-case serial", device.request_case_serial, device.decode_case_serial,
+          note="Identifies one person's hardware. Shown as raw bytes; do not paste it around."),
+    Entry("On-head detection", device.request_on_head_detection,
+          device.decode_on_head_detection,
+          note="Inverted on the wire: 0 is on. The setting, not whether it is being worn."),
+    Entry("Codec", audio.request_codec, audio.decode_codec,
+          note="Live state, not capability \u2014 255 with nothing playing. 240 means a call."),
+    Entry("Tone and voice prompts", audio.request_prompts, audio.decode_prompts,
+          note="Says whether this device will make a sound when something is written."),
+    Entry("Prompt language", audio.request_prompt_language, audio.decode_prompt_language),
     Entry("Feature list", features.request, features.decode),
     Entry("Feature list continuation", features.request_continuation, features.decode,
           note="Only when the first reply sets the continuation flag."),
