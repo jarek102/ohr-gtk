@@ -118,8 +118,20 @@ class Window(Adw.ApplicationWindow):
     def _build_status_group(self) -> Adw.PreferencesGroup:
         group = Adw.PreferencesGroup(
             title="Status",
-            description=f"Polled every {POLL_SECONDS} seconds while connected.",
+            description=(
+                f"Polled every {POLL_SECONDS} seconds while connected. Control traffic "
+                "shares a radio with the audio link — a long burst of it has been "
+                "followed by an audible drop in quality — so polling can be stopped "
+                "while you listen."
+            ),
         )
+
+        self._poll_row = Adw.SwitchRow(
+            title="Keep polling",
+            subtitle="off freezes the values below; nothing is sent until you act",
+        )
+        self._poll_row.set_active(True)
+        group.add(self._poll_row)
         self._rows: dict[str, Adw.ActionRow] = {}
         for key, title, subtitle in (
             ("battery", "Battery", "per cell; a level does not mean that earbud joined"),
@@ -422,7 +434,7 @@ class Window(Adw.ApplicationWindow):
     # --- polling and rendering ----------------------------------------------
 
     def _on_tick(self) -> bool:
-        if self._worker.address and not self._busy:
+        if self._worker.address and not self._busy and self._poll_row.get_active():
             self._poll()
         return GLib.SOURCE_CONTINUE
 
