@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ohr-gtk"
+version = "0.0.1"
+description = "GTK4/libadwaita front end for the ohr headset control library"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [{ name = "Jaroslaw Fuks" }]
+keywords = ["bluetooth", "headphones", "sennheiser", "gtk4", "libadwaita"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: X11 Applications :: GTK",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+]
+
+# PyGObject is deliberately not listed. It is a system package on every distribution
+# that ships GNOME, and pip building it from source against mismatched headers is a
+# worse outcome than an import error with a clear message.
+dependencies = [
+    "ohr[linux]",
+]
+
+[project.scripts]
+ohr-gtk = "ohr_gtk.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
