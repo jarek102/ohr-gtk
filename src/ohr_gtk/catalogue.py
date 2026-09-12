@@ -60,6 +60,18 @@ READS: tuple[Entry, ...] = (
     Entry("Tone and voice prompts", audio.request_prompts, audio.decode_prompts,
           note="Says whether this device will make a sound when something is written."),
     Entry("Prompt language", audio.request_prompt_language, audio.decode_prompt_language),
+    Entry("Device name", device.request_local_name, device.decode_local_name,
+          note="Whatever the owner called it, not the product name."),
+    Entry("aptX 96 kHz", device.request_aptx_96k_support, device.decode_aptx_96k_support),
+    Entry("aptX Lossless", device.request_aptx_lossless_support,
+          device.decode_aptx_lossless_support,
+          note="Earbuds only \u2014 the over-ear model answers operation-not-supported."),
+    Entry("Eco mode", battery.request_eco_mode, battery.decode_eco_mode),
+    Entry("Battery protection", battery.request_battery_protection,
+          battery.decode_battery_protection,
+          note="On means the device never charges to 100%."),
+    Entry("Transparency auto-pause", anc.request_auto_pause, anc.decode_auto_pause,
+          note="Whether transparency stops the music while it is active."),
     Entry("Feature list", features.request, features.decode),
     Entry("Feature list continuation", features.request_continuation, features.decode,
           note="Only when the first reply sets the continuation flag."),
@@ -114,6 +126,9 @@ WRITES: tuple[Entry, ...] = (
 #: aimed at by accident is the one holding the control channel.
 FORBIDDEN: dict[tuple[int, int], str] = {
     (10, 5): "deletes a pairing — there is no undo",
+    # Find-my-headphones. Reversible and harmless, and still not something to discover
+    # by accident while sweeping operations on a headset someone is wearing.
+    (22, 2): "makes the headset ring",
 }
 
 
