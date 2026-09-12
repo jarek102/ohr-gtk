@@ -119,7 +119,16 @@ WRITES: tuple[Entry, ...] = (
           audible=True, argument="state", default=0),
     Entry("Set adaptive", lambda state: anc.request_set_submode(3, state), writes=True,
           audible=True, argument="state", default=0),
+    Entry("Set bass boost on", lambda: equaliser.request_set_bass_boost(True), writes=True),
+    Entry("Set bass boost off", lambda: equaliser.request_set_bass_boost(False), writes=True),
+    Entry("Set EQ mode", equaliser.request_set_mode, writes=True,
+          argument="mode", default=1,
+          note="0 off, 1 user EQ. On feature 4, not 8 \u2014 not yet sent to hardware."),
 )
+
+#: Band gains take two arguments, which the one-argument rows above cannot express.
+#: They are driven from the equaliser panel instead, where the device's own reported
+#: range is available to clamp against.
 
 #: Feature 10 operation 5 deletes a pairing. It is not in the lists above and the raw
 #: sender refuses it: there is no undo, and the device it would most plausibly be
