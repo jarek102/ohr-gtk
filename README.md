@@ -32,10 +32,18 @@ PYTHONPATH=src:../ohr/src python3 -m ohr_gtk --connect AA:BB:CC:DD:EE:FF
 
 ## What it shows
 
-**Status**, polled every three seconds: battery per cell, charger, the two noise-control
-flags and the mode they present as, both level reads, and submodes. A field that could
-not be read says *unavailable* rather than showing a zero — an unread flag and a flag
-that is off are not the same thing, and one of them would justify writing to the device.
+**Status**, in three tiers, because reads are not free and a window meant to be left
+open would otherwise hammer the channel forever. Identity once per connection; battery,
+charger, noise-control flags and codec every few seconds; settings and the peer list
+every half-minute.
+
+**The device decides the layout.** Sections are built from the feature map the headset
+reports at connect — a row reading *unavailable* forever is worse than no row. A field
+that could not be read says so rather than showing a zero: an unread flag and a flag
+that is off are not the same thing, and only one of them would justify a write.
+
+**Connections** shows which devices are paired, which hold a slot, and which one is this
+computer. Peers routinely outnumber the slots available, which is the thing worth seeing.
 
 **Noise control**: the three modes. Each is up to two writes, verified by reading back,
 and planned from a reading taken in the same operation that writes — a plan built from
@@ -44,7 +52,8 @@ already selected writes **nothing**, because a redundant ANC write is a tone in 
 wearer's ears.
 
 **Developer**: every command in the library, with raw hex in and out, and a raw frame
-sender for probing features the specification does not yet cover.
+sender for probing features the specification does not yet cover. The status page above
+is written for a person; this one keeps the bytes.
 
 ## Adding a command
 
